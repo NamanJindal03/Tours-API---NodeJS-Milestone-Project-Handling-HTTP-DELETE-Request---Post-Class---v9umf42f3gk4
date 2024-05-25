@@ -9,6 +9,15 @@ const tourDetails = JSON.parse(fs.readFileSync(`${__dirname}/data/tours.json`));
 
 app.get('/tours', (req, res) => {
   //write a code here to get all the tours from tours.json
+  fs.readFile(`${__dirname}/data/tours.json`, (err, data) => {
+    if(err){
+      console.log(err);
+      res.status(500).json({message: 'Internal Server Error'});
+      return;
+    }
+    const tourData = JSON.parse(data);
+    res.status(200).json(tourData)
+  })
 });
 
 app.post('/tours', (req, res) => {
