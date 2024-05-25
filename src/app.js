@@ -66,7 +66,7 @@ app.put('/tours/:id', (req, res) => {
     const tourData = JSON.parse(data);
     const tourIndex = tourData.findIndex((tourEntry)=> tourEntry.id === tourId);
     if(tourIndex === -1){
-      res.status(404).json({message: 'Not Found'});
+      res.status(404).json({message: 'Tour not found'});
       return;
     }
 
@@ -96,7 +96,7 @@ app.delete('/tours/:id', (req, res) => {
     const tourData = JSON.parse(data);
     const updatedTourData = tourData.filter((tourEntry)=> tourEntry.id !== tourId);
     if(tourData.length === updatedTourData.length){
-      res.status(404).json({message: 'Not Found'});
+      res.status(404).json({message: 'Tour not found'});
       return;
     }
 
