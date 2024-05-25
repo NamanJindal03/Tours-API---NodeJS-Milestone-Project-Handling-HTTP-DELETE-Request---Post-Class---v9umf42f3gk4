@@ -21,7 +21,6 @@ app.get('/tours', (req, res) => {
 });
 
 app.post('/tours', (req, res) => {
-  const { name, description, duration, price } = req.body;
   /* 
     Be -> DB -> FE -> 100 fields -> 4 
   
@@ -29,6 +28,7 @@ app.post('/tours', (req, res) => {
  //read the file
  //append in the data 
  //write the file 
+  const { name, description, duration, price } = req.body;
  fs.readFile(`${__dirname}/data/tours.json`, (err, data) => {
     if(err){
       console.log(err);
@@ -57,12 +57,58 @@ app.post('/tours', (req, res) => {
 app.put('/tours/:id', (req, res) => {
   const tourId = parseInt(req.params.id);
   const updatedTour = req.body;
+  fs.readFile(`${__dirname}/data/tours.json`, (err, data) => {
+    if(err){
+      console.log(err);
+      res.status(500).json({message: 'Internal Server Error'});
+      return;
+    }
+    const tourData = JSON.parse(data);
+    const tourIndex = tourData.findIndex((tourEntry)=> tourEntry.id === tourId);
+    if(tourIndex === -1){
+      res.status(404).json({message: 'Not Found'});
+      return;
+    }
+
+    tourData[tourIndex] = {...tourData[tourIndex], ...updatedTour};
+
+    fs.writeFile(`${__dirname}/data/tours.json`, JSON.stringify(tourData), (err)=>{
+      if(err){
+        console.log(err);
+        res.status(500).json({message: 'Internal Server Error'});
+        return;
+      }
+      res.status(200).json({ message: 'Tour updated successfully'})
+    })
+  })
 
   //write a code here for updating a tour
 });
 
 app.delete('/tours/:id', (req, res) => {
   const tourId = parseInt(req.params.id);
+  fs.readFile(`${__dirname}/data/tours.json`, (err, data) => {
+    if(err){
+      console.log(err);
+      res.status(500).json({message: 'Internal Server Error'});
+      return;
+    }
+    const tourData = JSON.parse(data);
+    const updatedTourData = tourData.filter((tourEntry)=> tourEntry.id !== tourId);
+    if(tourData.length === updatedTourData.length){
+      res.status(404).json({message: 'Not Found'});
+      return;
+    }
+
+    fs.writeFile(`${__dirname}/data/tours.json`, JSON.stringify(updatedTourData), (err)=>{
+      if(err){
+        console.log(err);
+        res.status(500).json({message: 'Internal Server Error'});
+        return;
+      }
+      res.status(200).json({ message: 'Tour deleted successfully'})
+    })
+  })
   //Write a code here for deleting a tour from data/tours.json
 });
 
